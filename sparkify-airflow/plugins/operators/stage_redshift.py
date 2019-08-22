@@ -41,6 +41,9 @@ class StageToRedshiftOperator(BaseOperator):
         self.execution_date = kwargs.get('execution_date')
 
     def execute(self, context):
+        """
+        Copies data from S3 buckets to AWS Redshift cluster into staging tables.
+        """
         self.log.info('Executing StageToRedshiftOperator!')
 
         aws_hook = AwsHook(self.aws_credentials_id)
