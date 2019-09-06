@@ -22,7 +22,6 @@ class DataQualityOperator(BaseOperator):
         operator ran successfully.
         """
         self.log.info('Executing DataQualityOperator!')
-
         redshift = PostgresHook(self.redshift_conn_id)
 
         for table in self.tables:

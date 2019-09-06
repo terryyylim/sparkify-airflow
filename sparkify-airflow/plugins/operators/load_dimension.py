@@ -7,19 +7,24 @@ from airflow.utils.decorators import apply_defaults
 class LoadDimensionOperator(BaseOperator):
 
     ui_color = '#80BD9E'
+    
+    insert_sql = """
+        TRUNCATE TABLE {};
+        INSERT INTO {}
+        {};
+        COMMIT;
+    """
 
     @apply_defaults
     def __init__(self,
                 redshift_conn_id="",
                 table="",
-                truncate="",
                 sql_query="",
                 *args, **kwargs):
 
         super(LoadDimensionOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id
         self.table = table
-        self.truncate = truncate
         self.sql_query = sql_query
 
     def execute(self, context):
@@ -31,12 +36,14 @@ class LoadDimensionOperator(BaseOperator):
         the deletions, but records removed this way cannot be restored in a rollback operation.
         """
         self.log.info('Executing LoadDimensionOperator!')
-
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
-        if self.truncate:
-            redshift.run(f'TRUNCATE TABLE {self.table}')
-        
-        formatted_sql = self.sql_query.format(self.table)
+
+        self.log.info(f"Loading dimension table {self.table} into Redshift")
+        formatted_sql = LoadDimensionOperator.insert_sql.format(
+            self.table,
+            self.table,
+            self.sql_query
+        )
         redshift.run(formatted_sql)
 
-        self.log.info(f"Success@load_dimension.py: Loaded dimensions {self.table} table into Redshift")
+        self.log.info(f"Success@load_dimension.py: Loaded dimension table {self.table} into Redshift")

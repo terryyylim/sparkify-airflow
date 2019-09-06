@@ -3,7 +3,10 @@ from airflow.contrib.hooks.aws_hook import AwsHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 
-
+"""
+It's not a good idea to have table creation as part of main dag, as it is run hourly and it will be updating the already existing tables.
+It is better to have table creation as a separate DAG.
+"""
 class CreateTablesOperator(BaseOperator):
     ui_color = '#358140'
     sql_statement_file='create_tables.sql'
