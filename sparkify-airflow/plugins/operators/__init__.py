@@ -5,7 +5,7 @@ from operators.load_dimension import LoadDimensionOperator
 from operators.data_quality import DataQualityOperator
 
 __all__ = [
-    'CreateTablesOperator',
+    # 'CreateTablesOperator',
     'StageToRedshiftOperator',
     'LoadFactOperator',
     'LoadDimensionOperator',
